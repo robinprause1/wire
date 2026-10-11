@@ -1,22 +1,16 @@
 # Wire
 
-Wire reads a set of sources on a schedule, indexes what it finds, and asks [Jev](https://typesafe.ai) one yes/no question about it. Which sources, how often, and which question is up to you: a **desk** bundles those choices, and one Wire process runs as many desks as you like.
+## Start
 
-The default example is a crypto desk (26 market and news feeds, one question per coin). The same pipeline works for any set of URLs: ten supplier pages crawled hourly with the question "did {subject} announce a delay?", a few RSS feeds with the question "is there anything here my team has to react to today?", a Telegram channel plus a watchlist of product names.
+Wire is one process. The desk and the control panel are the same server.
 
-The desk page and the control panel (Steuerung) are one process. Open the desk at [http://127.0.0.1:8787](http://127.0.0.1:8787) and the panel at [http://127.0.0.1:8787/manage](http://127.0.0.1:8787/manage). The interface is in German. Questions to Jev are English, because most notes are English.
-
-`src/` is a separate local trading UI. It is not imported by Wire and is not required to run this app.
-
-## Quick start
-
-Docker is the path that does not ask you to install PyTorch, Haystack, or Qdrant yourself. The first start downloads the embedding model (about 120 MB) into a volume.
+With Docker, from this folder. The first start downloads the embedding model, about 120 MB:
 
 ```bash
 docker compose up --build
 ```
 
-Without Docker, from the repository root:
+Without Docker:
 
 ```bash
 python3 -m venv intel/.venv
@@ -24,7 +18,23 @@ intel/.venv/bin/pip install -r intel/requirements.txt
 ./intel/run.sh
 ```
 
-`intel/run.sh` uses `WIRE_PYTHON`, then `intel/.venv`, then creates that venv.
+Open [http://127.0.0.1:8787](http://127.0.0.1:8787). The panel is [http://127.0.0.1:8787/manage](http://127.0.0.1:8787/manage). The interface is in German.
+
+The first account is the admin. Nothing is fetched until you turn a desk's schedule on, or press "Jetzt laufen lassen". For Jev to answer, put `TYPESAFE_API_KEY=` in a `.env` file at the repository root. Without that key, a run still fetches and indexes, and each question is stored as failed.
+
+## What it does
+
+Wire reads a set of sources on a schedule, indexes what it finds, and asks [Jev](https://typesafe.ai) one yes/no question about it. Which sources, how often, and which question is up to you: a **desk** bundles those choices, and one Wire process runs as many desks as you like.
+
+The default example is a crypto desk (26 market and news feeds, one question per coin). The same pipeline works for any set of URLs: ten supplier pages crawled hourly with the question "did {subject} announce a delay?", a few RSS feeds with the question "is there anything here my team has to react to today?", a Telegram channel plus a watchlist of product names.
+
+Questions to Jev are English, because most notes are English.
+
+`src/` is a separate local trading UI. It is not imported by Wire and is not required to run this app.
+
+## Quick start
+
+The commands are in [Start](#start). `intel/run.sh` uses `WIRE_PYTHON`, then `intel/.venv`, then creates that venv. Docker is the path that does not ask you to install PyTorch, Haystack, or Qdrant yourself.
 
 On the first start Wire creates one desk from the crypto template so the panel is not empty. Nothing runs until you either switch on its schedule or press "Jetzt laufen lassen". Open the panel, add the keys you need under Zugangsdaten, then decide.
 
