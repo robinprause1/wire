@@ -1,0 +1,17 @@
+services:
+  wire:
+    build:
+      context: .
+      dockerfile: intel/Dockerfile
+    ports:
+      - "127.0.0.1:8787:8787"
+    environment:
+      WIRE_HOST: 0.0.0.0
+      WIRE_PORT: "8787"
+    volumes:
+      - wire-data:/app/intel/data
+      - hf-cache:/root/.cache/huggingface
+
+volumes:
+  wire-data:
+  hf-cache:

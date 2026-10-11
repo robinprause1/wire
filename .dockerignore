@@ -1,0 +1,12 @@
+.git
+node_modules
+dist
+out
+intel/data
+intel/.venv
+**/.env
+**/.env.*
+**/__pycache__
+**/*.pyc
+.DS_Store
+.cursor

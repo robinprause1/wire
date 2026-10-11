@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("wire-theme");
+          if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+        } catch (error) {
+          /* storage can be off */
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3efe6" />
+    <title>Wire</title>
+    <link rel="stylesheet" href="/static/wire.css" />
+  </head>
+  <body>
+    <header class="mast">
+      <div class="mast-row">
+        <a class="word" href="/">Wire</a>
+        <label class="desk-pick">
+          <span class="sr">Desk</span>
+          <select id="desk-select" aria-label="Choose desk"></select>
+        </label>
+        <div class="dials">
+          <span class="who" id="who"></span>
+          <a class="tool" id="manage-link" href="/manage">Manage</a>
+          <button type="button" id="logout" class="secondary">Sign out</button>
+          <div class="theme" id="theme" role="radiogroup" aria-label="Appearance">
+            <button type="button" role="radio" data-theme-set="light">Light</button>
+            <button type="button" role="radio" data-theme-set="dark">Dark</button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="app">
+      <div class="board-head">
+        <form id="ask" class="search">
+          <label class="sr" for="q">Search the index</label>
+          <input id="q" name="question" type="search" placeholder="Search the index, without Jev" autocomplete="off" />
+          <button type="submit">Search</button>
+        </form>
+        <div class="tools">
+          <div class="stat">
+            <span>Next run</span>
+            <strong id="next">—</strong>
+          </div>
+          <div class="stat" id="balance" hidden>
+            <span id="balance-label"></span>
+            <strong id="balance-value">—</strong>
+          </div>
+          <button type="button" id="run">Run now</button>
+          <button type="button" id="force" class="secondary">Ask Jev</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <aside class="card" aria-label="Runs">
+          <div class="card-head">
+            <h2>Sources</h2>
+            <span id="doc-count" class="muted"></span>
+          </div>
+          <div id="schedule" class="scroll"></div>
+        </aside>
+
+        <section class="card decision" aria-label="Jev">
+          <div class="card-head">
+            <h2 id="verdict-heading">Verdicts</h2>
+            <div class="coin-tools">
+              <button type="button" id="only-yes" aria-pressed="false">Only yes</button>
+              <label class="sr" for="coin-q">Filter</label>
+              <input id="coin-q" class="coin-find" type="search" placeholder="Filter" autocomplete="off" />
+            </div>
+          </div>
+          <p id="question" class="question"></p>
+          <div id="verdict"></div>
+        </section>
+      </div>
+
+      <section class="card feed" aria-label="Stories">
+        <div class="card-head">
+          <h2>Stories</h2>
+        </div>
+        <div id="filters" class="chips"></div>
+        <div id="tape"></div>
+        <nav class="pager" id="pager" aria-label="Pages" hidden></nav>
+      </section>
+
+      <section id="hits" class="hits" aria-label="Search hits"></section>
+    </div>
+    <script type="module" src="/static/wire.js"></script>
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var theme = document.getElementById("theme");
+        var themes = ["light", "dark"];
+        function current() {
+          return root.dataset.theme === "dark" ? "dark" : "light";
+        }
+        function paint() {
+          var value = current();
+          if (!theme) return;
+          theme.querySelectorAll("[data-theme-set]").forEach(function (button) {
+            button.setAttribute("aria-checked", button.dataset.themeSet === value ? "true" : "false");
+          });
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute("content", value === "dark" ? "#0f0e0d" : "#f3efe6");
+        }
+        function setTheme(value) {
+          if (themes.indexOf(value) === -1) return;
+          root.dataset.theme = value;
+          try {
+            localStorage.setItem("wire-theme", value);
+          } catch (error) {
+            /* storage can be off */
+          }
+          paint();
+        }
+        paint();
+        if (!theme) return;
+        theme.addEventListener("click", function (event) {
+          var button = event.target.closest("[data-theme-set]");
+          if (button) setTheme(button.dataset.themeSet);
+        });
+      })();
+    </script>
+  </body>
+</html>

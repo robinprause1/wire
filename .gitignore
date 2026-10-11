@@ -1,0 +1,13 @@
+node_modules
+dist
+out
+.DS_Store
+*.local
+.env
+intel/.venv
+intel/data
+
+# Own site, own deploy. Career PDFs stay out of the Wire repo.
+/personal/
+__pycache__/
+*.pyc

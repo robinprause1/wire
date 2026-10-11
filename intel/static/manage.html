@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("wire-theme");
+          if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+        } catch (error) {
+          /* storage can be off */
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3efe6" />
+    <title>Wire · Manage</title>
+    <link rel="stylesheet" href="/static/wire.css" />
+    <link rel="stylesheet" href="/static/manage.css" />
+  </head>
+  <body class="manage">
+    <header class="mast">
+      <div class="mast-row">
+        <a class="word" href="/">Wire</a>
+        <nav class="stops" aria-label="Pages">
+          <a class="stop" href="/" id="desk-link">Desk</a>
+          <a class="stop" href="/manage" aria-current="page">Manage</a>
+        </nav>
+        <div class="dials">
+          <span class="who" id="who"></span>
+          <button type="button" id="logout" class="secondary">Sign out</button>
+          <div class="theme" id="theme" role="radiogroup" aria-label="Appearance">
+            <button type="button" role="radio" data-theme-set="light">Light</button>
+            <button type="button" role="radio" data-theme-set="dark">Dark</button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="app">
+      <section class="lead">
+        <p class="kicker">Manage</p>
+        <h1>Sources in.<br />One question.<br />Yes or no.</h1>
+        <p>
+          A desk is a standing order: read these sources, keep an index, ask Jev one question about every new story.
+          Each run makes four stops: fetch, index, pick, ask. The map below shows it happening; the four steps beneath set it up.
+        </p>
+        <div class="lead-tools">
+          <button type="button" id="run-now">Run now</button>
+          <a class="tool" id="stage-link" href="/manage?stage=line">Show as line</a>
+        </div>
+      </section>
+
+      <nav class="desk-bar" aria-label="Desks">
+        <div class="desk-tabs" id="desk-tabs" role="tablist"></div>
+        <button type="button" class="secondary" id="new-desk">New desk</button>
+      </nav>
+
+      <section class="stage" id="stage" aria-label="Route of a run">
+        <div class="viewport" id="viewport">
+          <canvas id="map" role="img" aria-label="Map: the route of one run from the sources to Jev" hidden></canvas>
+          <p id="next-run" class="next" hidden></p>
+          <p class="hint" id="stage-hint" hidden>
+            The dots are stories on their way through the stations. The coloured marker is the clock of the current cycle.
+            Click a station to switch it off or on.
+          </p>
+        </div>
+        <div class="caption" id="stage-caption" hidden>
+          <p class="kicker" id="caption-kicker"></p>
+          <p id="caption-text"></p>
+        </div>
+        <ol class="stations" id="stations" aria-label="Stations of a run"></ol>
+      </section>
+      <p id="notice" class="notice" hidden></p>
+
+      <section class="setup" id="setup" aria-labelledby="setup-title">
+        <div class="setup-head">
+          <p class="kicker" id="setup-kicker">Setup</p>
+          <h2 id="setup-title">Desk</h2>
+          <p class="setup-lede" id="setup-lede">Four steps. Each step saves on its own; you can go back any time.</p>
+        </div>
+
+        <ol class="steps" id="steps" role="tablist" aria-label="Steps">
+          <i class="steps-fill" id="steps-fill" aria-hidden="true"></i>
+          <li>
+            <button type="button" role="tab" data-go="desk" aria-controls="panel-desk">
+              <b>01</b>
+              <strong>Desk</strong>
+              <small data-sum="desk"></small>
+            </button>
+          </li>
+          <li>
+            <button type="button" role="tab" data-go="sources" aria-controls="panel-sources">
+              <b>02</b>
+              <strong>Sources</strong>
+              <small data-sum="sources"></small>
+            </button>
+          </li>
+          <li>
+            <button type="button" role="tab" data-go="brief" aria-controls="panel-brief">
+              <b>03</b>
+              <strong>Question</strong>
+              <small data-sum="brief"></small>
+            </button>
+          </li>
+          <li>
+            <button type="button" role="tab" data-go="schedule" aria-controls="panel-schedule">
+              <b>04</b>
+              <strong>Schedule</strong>
+              <small data-sum="schedule"></small>
+            </button>
+          </li>
+        </ol>
+
+        <div class="panels" id="panels">
+          <form id="desk-form" class="panel sheet" data-step="desk" role="tabpanel" aria-labelledby="step-desk">
+            <div class="panel-head">
+              <h3 id="step-desk">What is this desk about?</h3>
+              <p>A name and one sentence. This is how the desk appears in the bar above and to approved users.</p>
+            </div>
+            <div class="templates-field" id="templates-field" hidden>
+              <p class="cap">Starting point</p>
+              <div class="templates" id="templates" role="radiogroup" aria-label="Template"></div>
+            </div>
+            <label class="field column">
+              <span><strong>Name</strong></span>
+              <input id="desk-name" type="text" maxlength="80" placeholder="e.g. Status of our suppliers" autocomplete="off" required />
+            </label>
+            <label class="field column">
+              <span><strong>Description</strong><em>Optional. One sentence that explains the brief.</em></span>
+              <input id="desk-summary" type="text" maxlength="240" />
+            </label>
+            <div class="sheet-foot between">
+              <span class="foot-left">
+                <button type="button" class="secondary" id="creator-close" hidden>Cancel</button>
+                <button type="button" class="danger" id="desk-delete">Delete desk</button>
+              </span>
+              <button type="submit" id="desk-next">Next</button>
+            </div>
+          </form>
+
+          <section class="panel" data-step="sources" role="tabpanel" aria-labelledby="step-sources" hidden>
+            <div class="panel-head">
+              <h3 id="step-sources">What does Wire read?</h3>
+              <p id="source-count"></p>
+            </div>
+            <div id="sources" class="source-list"></div>
+            <form class="adder" id="adder">
+              <p class="cap">Add a source</p>
+              <div class="adder-row">
+                <label class="text-field">
+                  <span>Kind</span>
+                  <select id="adder-kind"></select>
+                </label>
+                <div class="adder-fields" id="adder-fields"></div>
+                <label class="text-field">
+                  <span>Name <em>optional</em></span>
+                  <input id="adder-name" type="text" maxlength="80" autocomplete="off" />
+                </label>
+                <button type="submit" class="secondary">Add</button>
+              </div>
+              <p class="adder-summary" id="adder-summary"></p>
+            </form>
+            <div class="sheet-foot between">
+              <button type="button" class="secondary" data-go="desk">Back</button>
+              <button type="button" data-go="brief">Next</button>
+            </div>
+          </section>
+
+          <form id="brief" class="panel sheet" data-step="brief" role="tabpanel" aria-labelledby="step-brief" hidden>
+            <div class="panel-head">
+              <h3 id="step-brief">What should Jev decide?</h3>
+              <p>What Jev judges, in which words, and from which probability an answer counts as “Yes”.</p>
+            </div>
+            <p class="cap">Candidates</p>
+            <div class="pickers" id="pickers" role="radiogroup" aria-label="Candidates"></div>
+            <label class="field column watchlist-field" id="watchlist-field">
+              <span>
+                <strong>Watchlist</strong>
+                <em>One term per line or separated by commas. Jev is asked per term that appears in the window.</em>
+              </span>
+              <textarea id="brief-watchlist" rows="3" placeholder="Qdrant&#10;Haystack&#10;Supplier XY"></textarea>
+            </label>
+            <label class="field column">
+              <span>
+                <strong>Question</strong>
+                <em><code>{subject}</code> is replaced by the candidate.</em>
+              </span>
+              <textarea id="brief-question" rows="2" maxlength="600"></textarea>
+            </label>
+            <div class="field-pair">
+              <label class="field column">
+                <span><strong>“Yes” means</strong></span>
+                <textarea id="brief-true" rows="3" maxlength="400"></textarea>
+              </label>
+              <label class="field column">
+                <span><strong>“No” means</strong></span>
+                <textarea id="brief-false" rows="3" maxlength="400"></textarea>
+              </label>
+            </div>
+            <div class="field-pair">
+              <label class="field">
+                <span>
+                  <strong>Window</strong>
+                  <em>Only stories from the last hours count as evidence.</em>
+                </span>
+                <span class="unit"><input id="brief-window" type="number" min="1" max="336" step="1" /> h</span>
+              </label>
+              <label class="field">
+                <span>
+                  <strong>Yes at</strong>
+                  <em>From this probability the desk shows “Yes”. 0.4 means 40 %.</em>
+                </span>
+                <input id="brief-yes" type="number" min="0.05" max="0.9" step="0.05" />
+              </label>
+            </div>
+            <div class="sheet-foot between">
+              <button type="button" class="secondary" data-go="sources">Back</button>
+              <button type="submit">Next</button>
+            </div>
+          </form>
+
+          <form id="schedule" class="panel sheet" data-step="schedule" role="tabpanel" aria-labelledby="step-schedule" hidden>
+            <div class="panel-head">
+              <h3 id="step-schedule">When does it run?</h3>
+              <p id="schedule-note"></p>
+            </div>
+            <label class="field">
+              <span>
+                <strong>Automatic</strong>
+                <em>Off means runs only start via “Run now”.</em>
+              </span>
+              <input id="schedule-on" type="checkbox" />
+              <i class="knob" aria-hidden="true"></i>
+            </label>
+            <label class="field">
+              <span><strong>Cadence</strong></span>
+              <select id="schedule-mode">
+                <option value="hourly">Every full hour</option>
+                <option value="interval">Fixed interval</option>
+              </select>
+            </label>
+            <label class="field minutes">
+              <span>
+                <strong>Minutes</strong>
+                <em>Interval only. At least 15.</em>
+              </span>
+              <input id="schedule-minutes" type="number" min="15" max="1440" step="15" value="60" />
+            </label>
+            <div class="sheet-foot between">
+              <button type="button" class="secondary" data-go="brief">Back</button>
+              <button type="submit">Done</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="global" aria-label="For all desks">
+        <p class="kicker">For all desks</p>
+        <div class="split">
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h2>Users</h2>
+                <p>Whoever registers sees the desk only after approval and gets the answers there.</p>
+              </div>
+            </div>
+            <div id="people"></div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h2>Credentials</h2>
+                <p>Saving an empty field removes the stored value.</p>
+              </div>
+            </div>
+            <div id="secrets"></div>
+          </section>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/static/manage.js"></script>
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var theme = document.getElementById("theme");
+        var themes = ["light", "dark"];
+        function current() {
+          return root.dataset.theme === "dark" ? "dark" : "light";
+        }
+        function paint() {
+          var value = current();
+          if (!theme) return;
+          theme.querySelectorAll("[data-theme-set]").forEach(function (button) {
+            button.setAttribute("aria-checked", button.dataset.themeSet === value ? "true" : "false");
+          });
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute("content", value === "dark" ? "#0f0e0d" : "#f3efe6");
+        }
+        function setTheme(value) {
+          if (themes.indexOf(value) === -1) return;
+          root.dataset.theme = value;
+          try {
+            localStorage.setItem("wire-theme", value);
+          } catch (error) {
+            /* storage can be off */
+          }
+          paint();
+        }
+        paint();
+        if (!theme) return;
+        theme.addEventListener("click", function (event) {
+          var button = event.target.closest("[data-theme-set]");
+          if (button) setTheme(button.dataset.themeSet);
+        });
+      })();
+    </script>
+  </body>
+</html>

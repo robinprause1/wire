@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("wire-theme");
+          if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+        } catch (error) {
+          /* storage can be off */
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3efe6" />
+    <title>Wire · Sign in</title>
+    <link rel="stylesheet" href="/static/gate.css" />
+  </head>
+  <body>
+    <header class="mast">
+      <div class="mast-row">
+        <a class="word" href="/login">Wire</a>
+        <nav aria-label="Access">
+          <span class="stops">
+            <span class="stop is-now">
+              <b id="stop-num" aria-hidden="true">01</b>
+              <span class="stop-label" id="stop-label">Access</span>
+              <i class="stop-bar" aria-hidden="true"></i>
+            </span>
+          </span>
+        </nav>
+        <div class="dials">
+          <div class="theme" id="theme" role="radiogroup" aria-label="Appearance">
+            <button type="button" role="radio" aria-checked="true" data-theme-set="light">Light</button>
+            <button type="button" role="radio" aria-checked="false" data-theme-set="dark">Dark</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="page hero-grid">
+          <div class="hero-copy">
+            <p class="kicker">
+              <span id="kicker-label">Sign in</span>
+              <span class="kicker-sep" aria-hidden="true"></span>
+              <span>Desk</span>
+            </p>
+            <p class="lede" id="lead">Sign in. The answers are on the desk.</p>
+            <p class="alert" id="note" role="alert" hidden><i aria-hidden="true"></i><span id="note-text"></span></p>
+            <noscript><p class="lede">Signing in needs JavaScript.</p></noscript>
+
+            <form id="setup" hidden>
+              <div class="field">
+                <label for="setup-name">Name</label>
+                <input id="setup-name" name="name" autocomplete="name" required minlength="2" maxlength="80" />
+              </div>
+              <div class="field">
+                <label for="setup-email">Email</label>
+                <input id="setup-email" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" required />
+              </div>
+              <div class="field">
+                <div class="field-head">
+                  <label for="setup-password">Password</label>
+                  <button type="button" class="peek" data-peek="setup-password" aria-pressed="false" aria-label="Show password">Show</button>
+                </div>
+                <input id="setup-password" name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="200" aria-describedby="setup-hint note" />
+              </div>
+              <p class="hint" id="setup-hint">At least 8 characters.</p>
+              <button class="go" type="submit"><span>Create admin</span><i aria-hidden="true">→</i></button>
+            </form>
+
+            <form id="login" hidden>
+              <div class="field">
+                <label for="login-email">Email</label>
+                <input id="login-email" name="email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required />
+              </div>
+              <div class="field">
+                <div class="field-head">
+                  <label for="login-password">Password</label>
+                  <button type="button" class="peek" data-peek="login-password" aria-pressed="false" aria-label="Show password">Show</button>
+                </div>
+                <input id="login-password" name="password" type="password" autocomplete="current-password" required aria-describedby="note" />
+              </div>
+              <button class="go" type="submit"><span>Sign in</span><i aria-hidden="true">→</i></button>
+            </form>
+
+            <form id="register" hidden>
+              <div class="field">
+                <label for="register-name">Name</label>
+                <input id="register-name" name="name" autocomplete="name" required minlength="2" maxlength="80" />
+              </div>
+              <div class="field">
+                <label for="register-email">Email</label>
+                <input id="register-email" name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" required />
+              </div>
+              <div class="field">
+                <div class="field-head">
+                  <label for="register-password">Password</label>
+                  <button type="button" class="peek" data-peek="register-password" aria-pressed="false" aria-label="Show password">Show</button>
+                </div>
+                <input id="register-password" name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="200" aria-describedby="register-hint note" />
+              </div>
+              <p class="hint" id="register-hint">At least 8 characters.</p>
+              <button class="go" type="submit"><span>Register</span><i aria-hidden="true">→</i></button>
+            </form>
+
+            <p class="switch" id="switch" hidden>
+              <button type="button" id="show-register">No access yet? Register</button>
+              <button type="button" id="show-login" hidden>Already registered? Sign in</button>
+            </p>
+            <p class="actions" id="actions" hidden>
+              <button type="button" class="go" id="logout"><span>Sign out</span><i aria-hidden="true">→</i></button>
+              <button type="button" class="text" id="back-login" hidden>Back to sign in</button>
+            </p>
+          </div>
+
+          <aside class="plate">
+            <p class="num" id="plate-num">01</p>
+            <p class="plate-label" id="plate-label">Access</p>
+            <p class="plate-cap"><span>Wire</span><span>fig. 1</span></p>
+          </aside>
+        </div>
+
+        <h1 id="title" class="name page">
+          <span class="name-a solo" id="title-a">Sign in</span><span class="name-b" id="title-b" hidden></span>
+        </h1>
+
+        <div class="ticker" aria-hidden="true">
+          <div class="ticker-track">
+            <span>Read</span><i></i>
+            <span>Index</span><i></i>
+            <span>Decide</span><i></i>
+            <span>Sources</span><i></i>
+            <span>Candidates</span><i></i>
+            <span>Jev</span><i></i>
+            <span>Approval</span><i></i>
+            <span>Desk</span><i></i>
+            <span>Read</span><i></i>
+            <span>Index</span><i></i>
+            <span>Decide</span><i></i>
+            <span>Sources</span><i></i>
+            <span>Candidates</span><i></i>
+            <span>Jev</span><i></i>
+            <span>Approval</span><i></i>
+            <span>Desk</span><i></i>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/static/login.js"></script>
+  </body>
+</html>

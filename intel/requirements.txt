@@ -1,0 +1,4 @@
+haystack-ai==3.3.0
+qdrant-haystack==11.1.0
+sentence-transformers==6.1.0
+jev-reranker==0.1.2
